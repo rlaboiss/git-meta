@@ -28,7 +28,6 @@ import json
 import argparse
 import datetime
 import re
-from distutils.version import StrictVersion
 from time import gmtime, strftime
 
 try:
@@ -36,6 +35,13 @@ try:
     from pipes import quote
 except ModuleNotFoundError:
     from shlex import quote
+
+try:
+    # Python <= 3.9
+    from distutils.version import StrictVersion
+except ModuleNotFoundError:
+    from packaging.version import Version
+    StrictVersion = Version
 
 
 def run(cmd, ignore_errors=False):
