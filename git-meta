@@ -21,7 +21,6 @@ __author__ = "Sébastien Gross"
 __copyright__ = """Copyright © 2014 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>"""
 
 import os, sys, subprocess
-import pipes
 from stat import *
 import pwd
 import grp
@@ -31,6 +30,13 @@ import datetime
 import re
 from distutils.version import StrictVersion
 from time import gmtime, strftime
+
+try:
+    # Python <= 3.12 (removed from 3.13)
+    from pipes import quote
+except ModuleNotFoundError:
+    from shlex import quote
+
 
 def run(cmd, ignore_errors=False):
     """run cmd"""
@@ -45,7 +51,7 @@ def run(cmd, ignore_errors=False):
         return out
     else:
         sys.stdout.write("Failed (%s): %s\n" %
-                         (rc, ' '.join(pipes.quote(arg) for arg in cmd)))
+                         (rc, ' '.join(quote(arg) for arg in cmd)))
         sys.stderr.write(err)
         sys.exit(1)
 
