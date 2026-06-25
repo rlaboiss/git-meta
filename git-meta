@@ -92,8 +92,12 @@ def load_metadata(args):
 
 def dump_database(args):
     data = load_metadata(args)
-    entries = data.keys()
-    entries.sort()
+    try:
+        # Python < 3
+        entries = data.keys()
+        entries.sort()
+    except AttributeError:
+        entries = sorted(data.keys())
     print('%s %s %s %s %s' %( 'mode'.center(6), 'mtime'.center(19), 'uid'.center(6), 'gid'.center(6), 'file' ))
     for entry in entries:
         row = ['%.6o' % data[entry]['mode']]
