@@ -29,8 +29,15 @@ import json
 import argparse
 import datetime
 import re
-from packaging.version import Version
 from time import gmtime, strftime
+
+try:
+    # Python <= 3.9
+    from distutils.version import StrictVersion
+except ModuleNotFoundError:
+    from packaging.version import Version
+    StrictVersion = Version
+
 
 def run(cmd, ignore_errors=False):
     """run cmd"""
