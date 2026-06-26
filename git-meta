@@ -21,7 +21,6 @@ __author__ = "Sébastien Gross"
 __copyright__ = """Copyright © 2014 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>"""
 
 import os, sys, subprocess
-import pipes
 from stat import *
 import pwd
 import grp
@@ -38,6 +37,12 @@ except ModuleNotFoundError:
     from packaging.version import Version
     StrictVersion = Version
 
+try:
+    # Python <= 3.12 (removed from 3.13)
+    from pipes import quote
+except ModuleNotFoundError:
+    from shlex import quote
+
 
 def run(cmd, ignore_errors=False):
     """run cmd"""
@@ -52,7 +57,7 @@ def run(cmd, ignore_errors=False):
         return out
     else:
         sys.stdout.write("Failed (%s): %s\n" %
-                         (rc, ' '.join(pipes.quote(arg) for arg in cmd)))
+                         (rc, ' '.join(quote(arg) for arg in cmd)))
         sys.stderr.write(err)
         sys.exit(1)
 
@@ -99,8 +104,12 @@ def load_metadata(args):
 
 def dump_database(args):
     data = load_metadata(args)
-    entries = data.keys()
-    entries.sort()
+    try:
+        # Python < 3
+        entries = data.keys()
+        entries.sort()
+    except AttributeError:
+        entries = sorted(data.keys())
     print('%s %s %s %s %s' %( 'mode'.center(6), 'mtime'.center(19), 'uid'.center(6), 'gid'.center(6), 'file' ))
     for entry in entries:
         row = ['%.6o' % data[entry]['mode']]
